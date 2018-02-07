@@ -13,8 +13,6 @@
  */
 package com.querydsl.apt;
 
-import static com.querydsl.apt.APTOptions.*;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
@@ -28,6 +26,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.NoType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
+import javax.tools.Diagnostic;
 import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
@@ -64,19 +63,16 @@ public abstract class AbstractQuerydslProcessor extends AbstractProcessor {
 
     private Context context;
 
-    private boolean shouldLogInfo;
-
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        setLogInfo();
-        logInfo("Running " + getClass().getSimpleName());
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Running " + getClass().getSimpleName());
 
         if (roundEnv.processingOver() || annotations.size() == 0) {
             return ALLOW_OTHER_PROCESSORS_TO_CLAIM_ANNOTATIONS;
         }
 
         if (roundEnv.getRootElements() == null || roundEnv.getRootElements().isEmpty()) {
-            logInfo("No sources to process");
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "No sources to process");
             return ALLOW_OTHER_PROCESSORS_TO_CLAIM_ANNOTATIONS;
         }
 
@@ -497,38 +493,38 @@ public abstract class AbstractQuerydslProcessor extends AbstractProcessor {
         for (String init : property.getInits()) {
             if (!init.startsWith("*") && property.getType() instanceof EntityType) {
                 String initProperty = init.contains(".") ? init.substring(0, init.indexOf('.')) : init;
-                Set<String> propertyNames = ((EntityType) property.getType()).getPropertyNames();
-                if (!propertyNames.contains(initProperty)) {
+                if (!((EntityType) property.getType()).getPropertyNames().contains(initProperty)) {
                     processingEnv.getMessager().printMessage(Kind.ERROR,
-                            "Illegal inits of " + entityType.getFullName() + "." + property.getName() + ": " +
-                                    initProperty + " not found in " + propertyNames);
+                        "Illegal inits of " + entityType.getFullName() + "." + property.getName() + ": " +
+                        initProperty + " not found");
                 }
             }
         }
     }
+
     private void serializeMetaTypes() {
         if (!context.supertypes.isEmpty()) {
-            logInfo("Serializing Supertypes");
+            processingEnv.getMessager().printMessage(Kind.NOTE, "Serializing Supertypes");
             serialize(conf.getSupertypeSerializer(), context.supertypes.values());
         }
 
         if (!context.entityTypes.isEmpty()) {
-            logInfo("Serializing Entity types");
+            processingEnv.getMessager().printMessage(Kind.NOTE, "Serializing Entity types");
             serialize(conf.getEntitySerializer(), context.entityTypes.values());
         }
 
         if (!context.extensionTypes.isEmpty()) {
-            logInfo("Serializing Extension types");
+            processingEnv.getMessager().printMessage(Kind.NOTE, "Serializing Extension types");
             serialize(conf.getEmbeddableSerializer(), context.extensionTypes.values());
         }
 
         if (!context.embeddableTypes.isEmpty()) {
-            logInfo("Serializing Embeddable types");
+            processingEnv.getMessager().printMessage(Kind.NOTE, "Serializing Embeddable types");
             serialize(conf.getEmbeddableSerializer(), context.embeddableTypes.values());
         }
 
         if (!context.projectionTypes.isEmpty()) {
-            logInfo("Serializing Projection types");
+            processingEnv.getMessager().printMessage(Kind.NOTE, "Serializing Projection types");
             serialize(conf.getDTOSerializer(), context.projectionTypes.values());
         }
 
@@ -541,27 +537,6 @@ public abstract class AbstractQuerydslProcessor extends AbstractProcessor {
     @Override
     public SourceVersion getSupportedSourceVersion() {
         return SourceVersion.latestSupported();
-    }
-
-    @Override
-    public Set<String> getSupportedOptions() {
-        Set<String> optionKeys = new HashSet<String>();
-        optionKeys.add(QUERYDSL_LOG_INFO);
-        return optionKeys;
-    }
-
-    private void setLogInfo() {
-        boolean hasProperty = processingEnv.getOptions().containsKey(QUERYDSL_LOG_INFO);
-        if (hasProperty) {
-            String val = processingEnv.getOptions().get(QUERYDSL_LOG_INFO);
-            shouldLogInfo = Boolean.parseBoolean(val);
-        }
-    }
-
-    private void logInfo(String message) {
-        if (shouldLogInfo) {
-            processingEnv.getMessager().printMessage(Kind.NOTE, message);
-        }
     }
 
     private void serialize(Serializer serializer, Collection<EntityType> models) {
@@ -590,7 +565,7 @@ public abstract class AbstractQuerydslProcessor extends AbstractProcessor {
                     }
                 }
 
-                logInfo("Generating " + className + " for " + elements);
+                processingEnv.getMessager().printMessage(Kind.NOTE, "Generating " + className + " for " + elements);
                 JavaFileObject fileObject = processingEnv.getFiler().createSourceFile(className,
                         elements.toArray(new Element[elements.size()]));
                 Writer writer = fileObject.openWriter();

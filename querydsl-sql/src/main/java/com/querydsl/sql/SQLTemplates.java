@@ -126,8 +126,6 @@ public class SQLTemplates extends Templates {
 
     private final boolean useQuotes;
 
-    private final boolean requiresSchemaInWhere;
-
     private boolean printSchema;
 
     private String createTable = "create table ";
@@ -252,19 +250,14 @@ public class SQLTemplates extends Templates {
 
     @Deprecated
     protected SQLTemplates(String quoteStr, char escape, boolean useQuotes) {
-        this(Keywords.DEFAULT, quoteStr, escape, useQuotes, false);
+        this(Keywords.DEFAULT, quoteStr, escape, useQuotes);
     }
 
     protected SQLTemplates(Set<String> reservedKeywords, String quoteStr, char escape, boolean useQuotes) {
-        this(reservedKeywords, quoteStr, escape, useQuotes, false);
-    }
-
-    protected SQLTemplates(Set<String> reservedKeywords, String quoteStr, char escape, boolean useQuotes, boolean requiresSchemaInWhere) {
         super(escape);
         this.reservedWords = reservedKeywords;
         this.quoteStr = quoteStr;
         this.useQuotes = useQuotes;
-        this.requiresSchemaInWhere = requiresSchemaInWhere;
 
         add(SQLOps.ALL, "{0}.*");
 
@@ -715,10 +708,6 @@ public class SQLTemplates extends Templates {
 
     public final boolean isCountDistinctMultipleColumns() {
         return countDistinctMultipleColumns;
-    }
-
-    public final boolean isRequiresSchemaInWhere() {
-        return requiresSchemaInWhere;
     }
 
     public final boolean isPrintSchema() {

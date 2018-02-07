@@ -65,7 +65,6 @@ public class SQLTemplatesRegistry {
             return TeradataTemplates.builder();
         } else if (name.equals("microsoft sql server")) {
             switch (md.getDatabaseMajorVersion()) {
-                case 13:
                 case 12:
                 case 11: return SQLServer2012Templates.builder();
                 case 10: return SQLServer2008Templates.builder();
@@ -76,7 +75,7 @@ public class SQLTemplatesRegistry {
             return new SQLTemplates.Builder() {
                 @Override
                 protected SQLTemplates build(char escape, boolean quote) {
-                    return new SQLTemplates(Keywords.DEFAULT, "\"", escape, quote, false);
+                    return new SQLTemplates(Keywords.DEFAULT, "\"", escape, quote);
                 }
             };
         }

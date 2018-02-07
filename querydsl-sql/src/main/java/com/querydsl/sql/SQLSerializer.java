@@ -466,27 +466,12 @@ public class SQLSerializer extends SerializerBase<SQLSerializer> {
         serialize(Position.AFTER_SELECT, metadata.getFlags());
         append("from ");
 
-        boolean originalDmlWithSchema = dmlWithSchema;
         dmlWithSchema = true;
         handle(entity);
-        dmlWithSchema = originalDmlWithSchema;
+        dmlWithSchema = false;
 
         if (metadata.getWhere() != null) {
-            serializeForWhere(metadata);
-        }
-    }
-
-    void serializeForWhere(QueryMetadata metadata) {
-        boolean requireSchemaInWhere = templates.isRequiresSchemaInWhere();
-        boolean originalDmlWithSchema = dmlWithSchema;
-
-        if (requireSchemaInWhere) {
-            dmlWithSchema = true;
-        }
-        append(templates.getWhere()).handle(metadata.getWhere());
-
-        if (requireSchemaInWhere) {
-            dmlWithSchema = originalDmlWithSchema;
+            append(templates.getWhere()).handle(metadata.getWhere());
         }
     }
 
@@ -505,10 +490,9 @@ public class SQLSerializer extends SerializerBase<SQLSerializer> {
         }
         serialize(Position.AFTER_SELECT, metadata.getFlags());
 
-        boolean originalDmlWithSchema = dmlWithSchema;
         dmlWithSchema = true;
         handle(entity);
-        dmlWithSchema = originalDmlWithSchema;
+        dmlWithSchema = false;
         append(" ");
         // columns
         if (!columns.isEmpty()) {
@@ -574,10 +558,9 @@ public class SQLSerializer extends SerializerBase<SQLSerializer> {
         }
         serialize(Position.AFTER_SELECT, metadata.getFlags());
 
-        boolean originalDmlWithSchema = dmlWithSchema;
         dmlWithSchema = true;
         handle(entity);
-        dmlWithSchema = originalDmlWithSchema;
+        dmlWithSchema = false;
         // columns
         if (!columns.isEmpty()) {
             append(" (");
@@ -629,10 +612,9 @@ public class SQLSerializer extends SerializerBase<SQLSerializer> {
         }
         serialize(Position.AFTER_SELECT, metadata.getFlags());
 
-        boolean originalDmlWithSchema = dmlWithSchema;
         dmlWithSchema = true;
         handle(entity);
-        dmlWithSchema = originalDmlWithSchema;
+        dmlWithSchema = false;
         append("\n");
         append(templates.getSet());
         boolean first = true;
@@ -652,7 +634,7 @@ public class SQLSerializer extends SerializerBase<SQLSerializer> {
         skipParent = false;
 
         if (metadata.getWhere() != null) {
-            serializeForWhere(metadata);
+            append(templates.getWhere()).handle(metadata.getWhere());
         }
     }
 
