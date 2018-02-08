@@ -72,7 +72,7 @@ public class OracleTemplates extends SQLTemplates {
     }
 
     public OracleTemplates(char escape, boolean quote) {
-        super(Keywords.ORACLE, "\"", escape, quote, false);
+        super(Keywords.ORACLE, "\"", escape, quote);
         setParameterMetadataAvailable(false);
         setBatchCountViaGetUpdateCount(true);
         setWithRecursive("with ");

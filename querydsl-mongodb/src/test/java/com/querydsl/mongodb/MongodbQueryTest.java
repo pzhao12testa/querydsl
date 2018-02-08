@@ -28,7 +28,7 @@ import org.mongodb.morphia.Morphia;
 
 import com.google.common.collect.Lists;
 import com.mongodb.BasicDBObject;
-import com.mongodb.MongoClient;
+import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 import com.mongodb.ReadPreference;
 import com.querydsl.core.NonUniqueResultException;
@@ -46,7 +46,7 @@ import com.querydsl.mongodb.morphia.MorphiaQuery;
 @Category(MongoDB.class)
 public class MongodbQueryTest {
 
-    private final MongoClient mongo;
+    private final Mongo mongo;
     private final Morphia morphia;
     private final Datastore ds;
 
@@ -56,14 +56,13 @@ public class MongodbQueryTest {
     private final QAddress address = QAddress.address;
     private final QMapEntity mapEntity = QMapEntity.mapEntity;
     private final QDates dates = QDates.dates;
-    private final QCountry country = QCountry.country;
 
     List<User> users = Lists.newArrayList();
     User u1, u2, u3, u4;
     City tampere, helsinki;
 
     public MongodbQueryTest() throws UnknownHostException, MongoException {
-        mongo = new MongoClient();
+        mongo = new Mongo();
         morphia = new Morphia().map(User.class).map(Item.class).map(MapEntity.class).map(Dates.class);
         ds = morphia.createDatastore(mongo, dbname);
     }
@@ -72,7 +71,6 @@ public class MongodbQueryTest {
     public void before() throws UnknownHostException, MongoException {
         ds.delete(ds.createQuery(Item.class));
         ds.delete(ds.createQuery(User.class));
-        ds.delete(ds.createQuery(Country.class));
         ds.delete(ds.createQuery(MapEntity.class));
 
         tampere = new City("Tampere", 61.30, 23.50);
@@ -591,15 +589,6 @@ public class MongodbQueryTest {
         assertEquals(
                 new BasicDBObject().append("firstName", "Bob").append("lastName", "Wilson"),
                 query.asDBObject());
-    }
-
-    @Test
-    public void converter() {
-        Country germany = new Country("Germany", Locale.GERMANY);
-        ds.save(germany);
-
-        Country fetchedCountry = query(Country.class).where(country.defaultLocale.eq(Locale.GERMANY)).fetchOne();
-        assertEquals(germany, fetchedCountry);
     }
 
     //TODO

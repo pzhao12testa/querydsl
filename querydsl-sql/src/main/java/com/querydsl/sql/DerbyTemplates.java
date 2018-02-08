@@ -54,7 +54,7 @@ public class DerbyTemplates extends SQLTemplates {
     }
 
     public DerbyTemplates(char escape, boolean quote) {
-        super(Keywords.DERBY, "\"", escape, quote, true);
+        super(Keywords.DERBY, "\"", escape, quote);
         setDummyTable("sysibm.sysdummy1");
         setAutoIncrement(" generated always as identity");
         setFunctionJoinsWrapped(true);

@@ -23,7 +23,6 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
-import org.mongodb.morphia.Morphia;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -58,7 +57,7 @@ public class MongodbSerializerTest {
 
     @Before
     public void before() {
-        serializer = new MorphiaSerializer(new Morphia());
+        serializer = new MorphiaSerializer(null);
         entityPath = new PathBuilder<Object>(Object.class, "obj");
         title = entityPath.getString("title");
         year = entityPath.getNumber("year", Integer.class);

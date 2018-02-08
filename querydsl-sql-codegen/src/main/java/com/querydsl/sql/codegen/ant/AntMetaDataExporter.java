@@ -121,12 +121,12 @@ public class AntMetaDataExporter extends Task {
     /**
      * naming strategy class to override (default: DefaultNamingStrategy)
      */
-    private String namingStrategyClass = DefaultNamingStrategy.class.getName();
+    private String namingStrategyClass;
 
     /**
-     * bean serializer class (default: BeanSerializer)
+     * bean serializer class
      */
-    private String beanSerializerClass = BeanSerializer.class.getName();
+    private String beanSerializerClass;
 
     /**
      * serializer class to override
@@ -286,6 +286,7 @@ public class AntMetaDataExporter extends Task {
             dbConn = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPassword);
             Configuration configuration = new Configuration(SQLTemplates.DEFAULT);
 
+            NamingStrategy namingStrategy = new DefaultNamingStrategy();
             MetaDataExporter exporter = new MetaDataExporter();
             if (namePrefix != null) {
                 exporter.setNamePrefix(namePrefix);
@@ -305,7 +306,7 @@ public class AntMetaDataExporter extends Task {
             exporter.setPackageName(packageName);
             exporter.setBeanPackageName(beanPackageName);
             exporter.setTargetFolder(new File(targetFolder));
-            exporter.setNamingStrategy((NamingStrategy) Class.forName(namingStrategyClass).newInstance());
+            exporter.setNamingStrategy(namingStrategy);
             exporter.setInnerClassesForKeys(innerClassesForKeys);
             exporter.setSchemaPattern(schemaPattern);
             exporter.setTableNamePattern(tableNamePattern);
@@ -328,7 +329,7 @@ public class AntMetaDataExporter extends Task {
             }
 
             if (exportBeans) {
-                BeanSerializer serializer = (BeanSerializer) Class.forName(beanSerializerClass).newInstance();
+                BeanSerializer serializer = new BeanSerializer();
                 if (beanInterfaces != null) {
                     for (String iface : beanInterfaces) {
                         int sepIndex = iface.lastIndexOf('.');

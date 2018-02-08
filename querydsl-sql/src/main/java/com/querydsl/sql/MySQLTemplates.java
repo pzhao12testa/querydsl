@@ -56,7 +56,7 @@ public class MySQLTemplates extends SQLTemplates {
     }
 
     public MySQLTemplates(char escape, boolean quote) {
-        super(Keywords.MYSQL, "`", escape, quote, false);
+        super(Keywords.MYSQL, "`", escape, quote);
         setArraysSupported(false);
         setParameterMetadataAvailable(false);
         setLimitRequired(true);

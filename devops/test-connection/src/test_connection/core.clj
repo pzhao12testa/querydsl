@@ -22,7 +22,7 @@
 
 (def cubrid-db {:classname "cubrid.jdbc.driver.CUBRIDDriver"
                 :subprotocol "cubrid"
-                :subname "localhost:30000:demodb:dba::"})
+                :subname "localhost:30000:demodb:public::"})
 
 (count (j/query oracle-db (s/select * :all_tables)))
 (count (j/query postgres-db (s/select * :pg_catalog.pg_tables)))
